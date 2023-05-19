@@ -15,6 +15,11 @@ async function bootstrap() {
     logger: winstonLogger,
   });
 
+  app.enableCors({
+    origin: ['localhost:3000', 'https://morningee.xyz'],
+    credentials: true,
+  });
+
   // helmet
   app.use(helmet());
   // cookie-parser
