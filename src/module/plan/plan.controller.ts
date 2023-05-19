@@ -30,9 +30,6 @@ export class PlanController {
   @UseGuards(JwtAuthGuard)
   @Get('today/allUser')
   async getThisTimePlan() {
-    const a = await this.planService.getAllUserThisTimePlan();
-    console.log('a : ', a);
-
     return await this.planService.getAllUserThisTimePlan();
   }
 }
