@@ -9,6 +9,7 @@ services:
 
   lattice-api-server:
     build: 
+      context: .
       dockerfile: ./Dockerfile
     ports:
       - "5555:3005"
