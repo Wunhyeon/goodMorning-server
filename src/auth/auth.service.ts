@@ -85,7 +85,7 @@ export class AuthService {
     if (process.env.NODE_ENV === 'dev') {
       return `${constantString.AC_USER_JWT_ACCESS_NAME}=${token}; HttpOnly; Path=/; Max-Age=${constantString.AC_USER_JWT_ACCESS_EXPIRATION_TIME}`;
     } else {
-      return `${constantString.AC_USER_JWT_ACCESS_NAME}=${token}; HttpOnly; SameSite=None; Secure; Domain=.${process.env.DOMAIN}  Path=/; Max-Age=${constantString.AC_USER_JWT_ACCESS_EXPIRATION_TIME}`;
+      return `${constantString.AC_USER_JWT_ACCESS_NAME}=${token}; HttpOnly; SameSite=None; Secure; Domain=.${process.env.DOMAIN};  Path=/; Max-Age=${constantString.AC_USER_JWT_ACCESS_EXPIRATION_TIME}`;
     }
   }
 

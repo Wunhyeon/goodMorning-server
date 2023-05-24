@@ -255,12 +255,29 @@ export class PlanService {
       todayStartTime.setUTCDate(todayStartTime.getUTCDate() + 1);
     }
 
+    /*
+    SELECT a1.id, plan.id AS plan_id, plan.contents, plan.creation_time
+    FROM ac_user a1
+    LEFT JOIN plan
+    ON plan.id = (
+          SELECT id
+              FROM plan
+              WHERE ac_user_id = a1.id
+              AND creation_time >= "2023-05-23T22:00:00.000Z" AND creation_time < "2023-05-24T22:00:00.000Z"
+              ORDER BY created_at DESC
+              LIMIT 1
+          );
+
+    */
+
     return this.acUserRepository
       .createQueryBuilder('acUser')
       .leftJoin(
         'acUser.plan',
         'plan',
-        `plan.id = (SELECT id FROM plan WHERE creation_time >= :yesterdayStartTime AND creation_time < :todayStartTime ORDER BY created_at DESC LIMIT 1)`,
+        `plan.id = (SELECT plan.id 
+                FROM plan 
+                WHERE  ac_user_id = acUser.id AND (creation_time >= :yesterdayStartTime AND creation_time < :todayStartTime) ORDER BY plan.created_at DESC LIMIT 1)`,
         { yesterdayStartTime, todayStartTime },
       )
       .select([
