@@ -250,9 +250,9 @@ export class PlanService {
     }
 
     // 시간비교.
-    if (now.getUTCHours() < goalTimeUtc) {
-      yesterdayStartTime.setUTCDate(yesterdayStartTime.getUTCDate() + 1);
-      todayStartTime.setUTCDate(todayStartTime.getUTCDate() + 1);
+    if (now.getUTCHours() >= goalTimeUtc) {
+      yesterdayStartTime.setUTCDate(now.getUTCDate());
+      todayStartTime.setUTCDate(now.getUTCDate() + 1);
     }
 
     /*
