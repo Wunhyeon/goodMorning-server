@@ -24,7 +24,7 @@ export class PlanController {
   }
 
   // plan 조회. (그날 다른사람들꺼. 다음 plan올리는 시간 전까지.)
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('today/allUser')
   async getThisTimePlan() {
     return await this.planService.getAllUserThisTimePlan2();
