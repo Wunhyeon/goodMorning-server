@@ -20,9 +20,6 @@ export class PlanController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async insertPlan(@Request() req, @Body() createPlanDto: CreatePlanDto) {
-    console.log('req.user : ', req.user);
-    console.log('createPlan : ', createPlanDto);
-
     await this.planService.insertPlan(req.user, createPlanDto);
   }
 
@@ -30,9 +27,6 @@ export class PlanController {
   @UseGuards(JwtAuthGuard)
   @Get('today/allUser')
   async getThisTimePlan() {
-    const a = await this.planService.getAllUserThisTimePlan();
-    console.log('a : ', a);
-
-    return await this.planService.getAllUserThisTimePlan();
+    return await this.planService.getAllUserThisTimePlan2();
   }
 }
