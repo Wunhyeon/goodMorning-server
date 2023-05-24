@@ -9,7 +9,7 @@ services:
 
   lattice-api-server:
     build: 
-      context: .    # 꼭붙여주기. 무조건.
+      context: .
       dockerfile: ./Dockerfile
     ports:
       - "5555:3005"
