@@ -210,16 +210,16 @@ export class PlanService {
         ? 24 + (constantString.PLAN_START_TIME_HOUR - 9)
         : constantString.PLAN_END_TIME_HOUR - 9;
 
-    const yesterdayStartTime = new Date();
-    yesterdayStartTime.setUTCDate(yesterdayStartTime.getUTCDate() - 1);
+    const startTime = new Date();
+    startTime.setUTCDate(startTime.getUTCDate() - 1);
 
-    const todayStartTime = new Date();
+    const endTime = new Date();
 
     // 시간 설정. UTC 타입으로 맞춰주기. 목표시간 - 9시간(KTC)가 -가 나오면, 하루를 빼주고, 시간은 24시 + (목표시간 - 9시간)(음수가 나오기 때문에, +를 해줬다.).
     if (constantString.PLAN_START_TIME_HOUR - 9 < 0) {
       // yesterdayStartTime
-      yesterdayStartTime.setUTCDate(yesterdayStartTime.getUTCDate() - 1);
-      yesterdayStartTime.setUTCHours(
+      startTime.setUTCDate(startTime.getUTCDate() - 1);
+      startTime.setUTCHours(
         24 + (constantString.PLAN_START_TIME_HOUR - 9),
         constantString.PLAN_START_TIME_MINUTE,
         0,
@@ -227,21 +227,21 @@ export class PlanService {
       );
 
       // todayStartTime
-      todayStartTime.setUTCDate(todayStartTime.getUTCDate() - 1);
-      todayStartTime.setUTCHours(
+      endTime.setUTCDate(endTime.getUTCDate() - 1);
+      endTime.setUTCHours(
         24 + (constantString.PLAN_START_TIME_HOUR - 9),
         constantString.PLAN_START_TIME_MINUTE,
         0,
         0,
       );
     } else {
-      yesterdayStartTime.setUTCHours(
+      startTime.setUTCHours(
         constantString.PLAN_START_TIME_HOUR - 9,
         constantString.PLAN_START_TIME_MINUTE,
         0,
         0,
       );
-      todayStartTime.setUTCHours(
+      endTime.setUTCHours(
         constantString.PLAN_START_TIME_HOUR - 9,
         constantString.PLAN_START_TIME_MINUTE,
         0,
@@ -250,9 +250,12 @@ export class PlanService {
     }
 
     // 시간비교.
-    if (now.getUTCHours() >= goalTimeUtc) {
-      yesterdayStartTime.setUTCDate(now.getUTCDate());
-      todayStartTime.setUTCDate(now.getUTCDate() + 1);
+    if (
+      now.getUTCHours() >= goalTimeUtc ||
+      now.getUTCDate() > startTime.getUTCDate()
+    ) {
+      startTime.setUTCDate(now.getUTCDate());
+      endTime.setUTCDate(now.getUTCDate() + 1);
     }
 
     /*
@@ -277,8 +280,8 @@ export class PlanService {
         'plan',
         `plan.id = (SELECT plan.id 
                 FROM plan 
-                WHERE  ac_user_id = acUser.id AND (creation_time >= :yesterdayStartTime AND creation_time < :todayStartTime) ORDER BY plan.created_at DESC LIMIT 1)`,
-        { yesterdayStartTime, todayStartTime },
+                WHERE  ac_user_id = acUser.id AND (creation_time >= :startTime AND creation_time < :endTime) ORDER BY plan.created_at DESC LIMIT 1)`,
+        { startTime, endTime },
       )
       .select([
         'acUser.id',
