@@ -251,8 +251,10 @@ export class PlanService {
 
     // 시간비교.
     if (
-      now.getUTCHours() >= goalTimeUtc ||
-      now.getUTCDate() > startTime.getUTCDate()
+      (now.getUTCDate() === endTime.getUTCDate() &&
+        now.getUTCHours() >= goalTimeUtc) ||
+      (now.getUTCDate() > endTime.getUTCDate() &&
+        now.getUTCHours() < startTime.getUTCHours())
     ) {
       startTime.setUTCDate(startTime.getUTCDate() + 1);
       endTime.setUTCDate(endTime.getUTCDate() + 1);
