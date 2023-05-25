@@ -254,8 +254,8 @@ export class PlanService {
       now.getUTCHours() >= goalTimeUtc ||
       now.getUTCDate() > startTime.getUTCDate()
     ) {
-      startTime.setUTCDate(now.getUTCDate());
-      endTime.setUTCDate(now.getUTCDate() + 1);
+      startTime.setUTCDate(startTime.getUTCDate() + 1);
+      endTime.setUTCDate(endTime.getUTCDate() + 1);
     }
 
     /*
