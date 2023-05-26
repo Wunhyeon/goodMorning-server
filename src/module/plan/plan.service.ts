@@ -252,12 +252,6 @@ export class PlanService {
       );
     }
 
-    console.log('now : ', now);
-    console.log('goalTimeUtc : ', goalTimeUtc);
-
-    console.log('startTime : ', startTime);
-    console.log('endTime : ', endTime);
-
     // 시간비교.
     // if (
     //   ((now.getUTCDate() === endTime.getUTCDate() ||
@@ -282,12 +276,7 @@ export class PlanService {
     compareDate.setUTCDate(startTime.getUTCDate());
     compareDate.setUTCHours(startTime.getUTCHours());
     compareDate.setUTCMinutes(startTime.getUTCMinutes());
-    console.log('compareDate : ', compareDate);
 
-    console.log('--------------------------------');
-
-    console.log('after - startTime : ', startTime);
-    console.log('after - endTime : ', endTime);
     /*
     SELECT a1.id, plan.id AS plan_id, plan.contents, plan.creation_time
     FROM ac_user a1
