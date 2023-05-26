@@ -211,14 +211,17 @@ export class PlanService {
         : constantString.PLAN_END_TIME_HOUR - 9;
 
     const startTime = new Date();
-    startTime.setUTCDate(startTime.getUTCDate() - 1);
+    if (now.getHours() < goalTimeUtc) {
+      startTime.setUTCDate(startTime.getUTCDate() - 1);
+    }
 
     const endTime = new Date();
+    endTime.setUTCDate(startTime.getUTCDate() + 1);
 
     // 시간 설정. UTC 타입으로 맞춰주기. 목표시간 - 9시간(KTC)가 -가 나오면, 하루를 빼주고, 시간은 24시 + (목표시간 - 9시간)(음수가 나오기 때문에, +를 해줬다.).
     if (constantString.PLAN_START_TIME_HOUR - 9 < 0) {
       // yesterdayStartTime
-      startTime.setUTCDate(startTime.getUTCDate() - 1);
+      // startTime.setUTCDate(startTime.getUTCDate() - 1);
       startTime.setUTCHours(
         24 + (constantString.PLAN_START_TIME_HOUR - 9),
         constantString.PLAN_START_TIME_MINUTE,
@@ -227,7 +230,7 @@ export class PlanService {
       );
 
       // todayStartTime
-      endTime.setUTCDate(endTime.getUTCDate() - 1);
+      // endTime.setUTCDate(endTime.getUTCDate() - 1);
       endTime.setUTCHours(
         24 + (constantString.PLAN_START_TIME_HOUR - 9),
         constantString.PLAN_START_TIME_MINUTE,
@@ -250,15 +253,29 @@ export class PlanService {
     }
 
     // 시간비교.
-    if (
-      (now.getUTCDate() === endTime.getUTCDate() &&
-        now.getUTCHours() >= goalTimeUtc) ||
-      (now.getUTCDate() > endTime.getUTCDate() &&
-        now.getUTCHours() < startTime.getUTCHours())
-    ) {
-      startTime.setUTCDate(startTime.getUTCDate() + 1);
-      endTime.setUTCDate(endTime.getUTCDate() + 1);
-    }
+    // if (
+    //   ((now.getUTCDate() === endTime.getUTCDate() ||
+    //     now.getUTCDate() - 1 === endTime.getUTCDate()) &&
+    //     now.getUTCHours() >= goalTimeUtc) ||
+    //   (now.getUTCDate() > endTime.getUTCDate() &&
+    //     now.getUTCHours() < startTime.getUTCHours())
+    // ) {
+    //   console.log('if@@@@@');
+
+    //   startTime.setUTCDate(startTime.getUTCDate() + 1);
+    //   endTime.setUTCDate(endTime.getUTCDate() + 1);
+    // }
+
+    // case
+    // now :  2023-05-25T22:47:09.698Z
+
+    // now : 2023-05-26T01:00:00
+
+    // 비교용
+    const compareDate = new Date();
+    compareDate.setUTCDate(startTime.getUTCDate());
+    compareDate.setUTCHours(startTime.getUTCHours());
+    compareDate.setUTCMinutes(startTime.getUTCMinutes());
 
     /*
     SELECT a1.id, plan.id AS plan_id, plan.contents, plan.creation_time
