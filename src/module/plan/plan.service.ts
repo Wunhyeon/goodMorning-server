@@ -5,6 +5,7 @@ import { User } from 'src/model/entity/user.entity';
 import { Plan } from 'src/model/entity/plan.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreatePlanDto } from './dto/create-plan.dto';
+import { Util } from 'src/util/util';
 
 @Injectable()
 export class PlanService {
@@ -15,6 +16,7 @@ export class PlanService {
     private planRepository: Repository<Plan>,
     @InjectRepository(User, constantString.morningeeConnection)
     private acUserRepository: Repository<User>,
+    private readonly util: Util,
   ) {}
 
   async insertPlan(user: User, plan: CreatePlanDto) {
@@ -29,51 +31,13 @@ export class PlanService {
   getAllUserThisTimePlan2() {
     const now = new Date();
 
-    // 목표시간은 KTC로 되어있으므로 UTC로 바꿔줌
-    const goalTimeUtc =
-      constantString.PLAN_START_TIME_HOUR - 9 < 0
-        ? 24 + (constantString.PLAN_START_TIME_HOUR - 9)
-        : constantString.PLAN_END_TIME_HOUR - 9;
-
-    const startTime = new Date();
-    if (now.getHours() < goalTimeUtc) {
-      startTime.setUTCDate(startTime.getUTCDate() - 1);
-    }
-
-    const endTime = new Date();
-    endTime.setUTCDate(startTime.getUTCDate() + 1);
-
-    // 시간 설정. UTC 타입으로 맞춰주기. 목표시간 - 9시간(KTC)가 -가 나오면, 하루를 빼주고, 시간은 24시 + (목표시간 - 9시간)(음수가 나오기 때문에, +를 해줬다.).
-    if (constantString.PLAN_START_TIME_HOUR - 9 < 0) {
-      // yesterdayStartTime
-      startTime.setUTCHours(
-        24 + (constantString.PLAN_START_TIME_HOUR - 9),
-        constantString.PLAN_START_TIME_MINUTE,
-        0,
-        0,
-      );
-
-      // todayStartTime
-      endTime.setUTCHours(
-        24 + (constantString.PLAN_START_TIME_HOUR - 9),
-        constantString.PLAN_START_TIME_MINUTE,
-        0,
-        0,
-      );
-    } else {
-      startTime.setUTCHours(
-        constantString.PLAN_START_TIME_HOUR - 9,
-        constantString.PLAN_START_TIME_MINUTE,
-        0,
-        0,
-      );
-      endTime.setUTCHours(
-        constantString.PLAN_START_TIME_HOUR - 9,
-        constantString.PLAN_START_TIME_MINUTE,
-        0,
-        0,
-      );
-    }
+    // 시작시간, 끝시간 받아오기 (오늘기준)
+    const { startTime, endTime } = this.util.getStartTimeAndEndTimeRangeDayTerm(
+      1,
+      now,
+      constantString.PLAN_START_TIME_HOUR,
+      constantString.PLAN_START_TIME_MINUTE,
+    );
 
     /*
     SELECT a1.id, plan.id AS plan_id, plan.contents, plan.creation_time
@@ -109,5 +73,27 @@ export class PlanService {
         'plan.creationTime',
       ])
       .getMany();
+  }
+
+  /**
+   * 오늘 내가 쓴 계획 조회.
+   * @param userId
+   */
+  getTodayMyPlan(userId: number) {
+    // 시작시간, 끝시간 받아오기 (오늘기준)
+    const { startTime, endTime } = this.util.getStartTimeAndEndTimeRangeDayTerm(
+      1,
+      new Date(),
+      constantString.PLAN_START_TIME_HOUR,
+      constantString.PLAN_START_TIME_MINUTE,
+    );
+
+    return this.planRepository
+      .createQueryBuilder('plan')
+      .innerJoin('plan.user', 'user', 'user.id = :userId', { userId })
+      .select(['plan.id', 'plan.contents', 'plan.creationTime'])
+      .where('plan.creationTime >= :startTime', { startTime })
+      .andWhere('plan.creationTime < :endTime', { endTime })
+      .getOne();
   }
 }

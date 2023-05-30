@@ -50,4 +50,23 @@ export class PlanController {
   async getThisTimePlan() {
     return await this.planService.getAllUserThisTimePlan2();
   }
+
+  // 오늘 내가 쓴 계획 조회
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        id: 4,
+        contents: {
+          plan: '테이블 정리(유유아이디 말고 넘버로)\n오늘 내가 쓴 계획 확인하기\n내 한달(30일)작성기록 보기\n생각하기',
+        },
+        creationTime: '2023-05-30T00:56:00.000Z',
+      },
+    },
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('today/mine')
+  async getTodayMyPlan(@Request() req) {
+    return await this.planService.getTodayMyPlan(req.user.id);
+  }
 }
