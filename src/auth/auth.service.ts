@@ -12,7 +12,7 @@ import { constantString } from 'src/global/global.constants';
 export class AuthService {
   constructor(
     @Inject(forwardRef(() => UserService))
-    private acUserService: UserService,
+    private userService: UserService,
     @Inject(forwardRef(() => AdminService))
     private adminService: AdminService,
     private jwtService: JwtService,
@@ -21,10 +21,13 @@ export class AuthService {
   ) {}
   // acUser용
   async validateAcUser(email: string, password: string) {
-    const acUser = await this.acUserService.findOneByUserEmail(email);
+    const user = await this.userService.findOneByUserEmail(email);
 
-    if (acUser && acUser.password === password) {
-      const { password, ...result } = acUser;
+    const hashedPassword = this.hashUtil.makeHash(password);
+    console.log('hashed : ', hashedPassword);
+
+    if (user && user.password === hashedPassword) {
+      const { password, ...result } = user;
       return result;
     }
 
@@ -37,7 +40,7 @@ export class AuthService {
       email,
     );
 
-    const hashedPassword = this.hashUtil.makeHash(password);
+    const hashedPassword = this.hashUtil.makeHash(password); // 나중에 admin계정 만들 때, 따로 admin계정용으로 saltKey를 만들어서 해야겠다.
 
     if (masterUser && masterUser.password === hashedPassword) {
       const { password, ...result } = masterUser;
