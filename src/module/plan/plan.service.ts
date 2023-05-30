@@ -94,6 +94,7 @@ export class PlanService {
       .select(['plan.id', 'plan.contents', 'plan.creationTime'])
       .where('plan.creationTime >= :startTime', { startTime })
       .andWhere('plan.creationTime < :endTime', { endTime })
+      .orderBy('plan.creationTime', 'DESC')
       .getOne();
   }
 }

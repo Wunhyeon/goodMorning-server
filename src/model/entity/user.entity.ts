@@ -29,6 +29,8 @@ export class User {
   @Column()
   email!: string;
 
+  @ApiProperty({ example: 'asdnkvl', description: '유저 비밀번호' })
+  @IsString()
   @Column()
   password!: string;
 
