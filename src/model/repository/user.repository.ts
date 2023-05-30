@@ -2,19 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { constantString } from 'src/global/global.constants';
 import { DataSource } from 'typeorm';
-import { AcUser } from '../entity/acUser.entity';
-import { Portfolio } from '../entity/portfolio.entity';
+import { User } from '../entity/user.entity';
 
 @Injectable()
-export class AcUserRepository {
+export class UserRepository {
   constructor(
-    @InjectDataSource(constantString.latticeConnection)
+    @InjectDataSource(constantString.morningeeConnection)
     private dataSource: DataSource,
   ) {}
 
   selectAll() {
     return this.dataSource
-      .getRepository(AcUser)
+      .getRepository(User)
       .createQueryBuilder('acUser')
       .getMany();
   }

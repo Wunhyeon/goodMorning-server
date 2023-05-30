@@ -1,5 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { AcUserModule } from 'src/module/ac-user/ac-user.module';
+import { UserModule } from 'src/module/user/user.module';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
@@ -31,7 +31,7 @@ import { MasterJwtRefreshTokenStrategy } from './master-jwt-refresh.strategy';
     JwtModule,
 
     forwardRef(() => AdminModule),
-    forwardRef(() => AcUserModule),
+    forwardRef(() => UserModule),
     UtilModule,
   ],
   providers: [

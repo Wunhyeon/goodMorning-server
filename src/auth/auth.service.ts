@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AcUserService } from 'src/module/ac-user/ac-user.service';
+import { UserService } from 'src/module/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { AcUser } from 'src/model/entity/acUser.entity';
+import { User } from 'src/model/entity/user.entity';
 import { MasterUser } from 'src/model/entity/masterUser.entity';
 import { ConfigService } from '@nestjs/config';
 import { AdminService } from 'src/module/admin/admin.service';
@@ -11,8 +11,8 @@ import { constantString } from 'src/global/global.constants';
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(forwardRef(() => AcUserService))
-    private acUserService: AcUserService,
+    @Inject(forwardRef(() => UserService))
+    private acUserService: UserService,
     @Inject(forwardRef(() => AdminService))
     private adminService: AdminService,
     private jwtService: JwtService,
@@ -46,11 +46,11 @@ export class AuthService {
     return null;
   }
 
-  async acUserlogin(acUser: AcUser) {
+  async acUserlogin(user: User) {
     const payload = {
-      id: acUser.id,
-      email: acUser.email,
-      authorityPolicy: acUser.authorityPolicy,
+      id: user.id,
+      email: user.email,
+      // authorityPolicy: user.authorityPolicy,
     };
 
     return {
@@ -62,7 +62,6 @@ export class AuthService {
     const payload = {
       id: masterUser.id,
       email: masterUser.email,
-      accelerator: masterUser.accelerator,
     };
 
     return {
@@ -70,16 +69,16 @@ export class AuthService {
     };
   }
 
-  getCookieWithJwtAccessToken(acUser: AcUser) {
+  getCookieWithJwtAccessToken(user: User) {
     const payload = {
-      id: acUser.id,
-      email: acUser.email,
+      id: user.id,
+      email: user.email,
       // authorityPolicy: acUser.authorityPolicy,
     };
 
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('AC_USER_JWT_ACCESS_SECRET'),
-      expiresIn: constantString.AC_USER_JWT_ACCESS_EXPIRATION_TIME,
+      expiresIn: constantString.AC_USER_JWT_ACCESS_EXPIRATION_TIME * 1000, // expiresIn은 ms단위이기 때문에 * 1000해줘야 함
     });
 
     if (process.env.NODE_ENV === 'dev') {
@@ -89,9 +88,9 @@ export class AuthService {
     }
   }
 
-  getCookieWithJwtRefreshToken(acUser: AcUser) {
+  getCookieWithJwtRefreshToken(user: User) {
     const payload = {
-      id: acUser.id,
+      id: user.id,
     };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('AC_USER_JWT_REFRESH_SECRET'),
@@ -110,8 +109,6 @@ export class AuthService {
     const payload = {
       id: masterUser.id,
       email: masterUser.email,
-      accelerator: masterUser.accelerator.id,
-      // authorityPolicy: acUser.authorityPolicy,
     };
 
     const token = this.jwtService.sign(payload, {
@@ -122,9 +119,9 @@ export class AuthService {
     return `${constantString.MASTER_USER_JWT_ACCESS_NAME}=${token}; HttpOnly; Path=/; Max-Age=${constantString.MASTER_USER_JWT_ACCESS_EXPIRATION_TIME}`;
   }
 
-  masterGetCookieWithJwtRefreshToken(acUser: AcUser) {
+  masterGetCookieWithJwtRefreshToken(user: User) {
     const payload = {
-      id: acUser.id,
+      id: user.id,
     };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('MASTER_USER_JWT_REFRESH_SECRET'),

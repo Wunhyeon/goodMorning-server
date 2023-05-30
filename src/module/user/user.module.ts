@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { AcUserService } from './ac-user.service';
-import { AcUserController } from './ac-user.controller';
+import { UserService } from './user.service';
+import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AcUser } from 'src/model/entity/acUser.entity';
+import { User } from 'src/model/entity/user.entity';
 import { constantString } from 'src/global/global.constants';
 import { AuthModule } from 'src/auth/auth.module';
 import { MasterUser } from 'src/model/entity/masterUser.entity';
@@ -10,14 +10,14 @@ import { MasterUser } from 'src/model/entity/masterUser.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [AcUser, MasterUser],
-      constantString.latticeConnection,
+      [User, MasterUser],
+      constantString.morningeeConnection,
     ),
     // AuthModule,
     forwardRef(() => AuthModule),
   ],
-  controllers: [AcUserController],
-  providers: [AcUserService],
-  exports: [AcUserService],
+  controllers: [UserController],
+  providers: [UserService],
+  exports: [UserService],
 })
-export class AcUserModule {}
+export class UserModule {}

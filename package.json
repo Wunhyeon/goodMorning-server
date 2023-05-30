@@ -18,8 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "atype:migration": "ts-node ./node_modules/typeorm/cli.js migration:run -d lattice.a-type.dataSource.ts",
-    "atype:schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync -d lattice.a-type.dataSource.ts"
+    "morningee:migration": "ts-node ./node_modules/typeorm/cli.js migration:run -d morningee.dataSource.ts",
+    "morningee:schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync -d morningee.dataSource.ts"
   },
   "dependencies": {
     "@nestjs-modules/ioredis": "^1.0.1",

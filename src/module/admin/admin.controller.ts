@@ -18,7 +18,6 @@ import { AdminService } from './admin.service';
 import { Response } from 'express';
 import { MasterJwtRefreshAuthGuard } from 'src/auth/master-jwt-refresh-auth.guards';
 import { MasterJwtAuthGuard } from 'src/auth/master-jwt-auth.guards';
-import { CreateAcTechDto } from '../ac-tech/dto/create-acTech.dto';
 
 @ApiTags('ADMIN')
 @Controller('admin')
@@ -73,28 +72,5 @@ export class AdminController {
   @Get()
   getInfo(@Request() req) {
     return req.user;
-  }
-
-  @ApiOperation({
-    summary: '해당 ac의 전체 산업기술 조회',
-    description: '해당 ac의 전체 산업기술 조회',
-  })
-  @UseGuards(MasterJwtAuthGuard)
-  @Get('tech')
-  async getTech() {
-    // await this.adminService.createTech();
-  }
-
-  @ApiOperation({
-    summary: '해당 ac의 산업기술 추가',
-    description: '해당 ac의 산업기술 추가',
-  })
-  @UseGuards(MasterJwtAuthGuard)
-  @Post('tech')
-  createTech(@Body() createAcTechDto: CreateAcTechDto, @Req() req) {
-    // this.adminService
-    console.log('req.user : ', req.user);
-
-    this.adminService.createTech(createAcTechDto, req.user.accelerator);
   }
 }

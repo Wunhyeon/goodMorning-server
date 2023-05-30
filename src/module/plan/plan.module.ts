@@ -4,11 +4,11 @@ import { PlanController } from './plan.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Plan } from 'src/model/entity/plan.entity';
 import { constantString } from 'src/global/global.constants';
-import { AcUser } from 'src/model/entity/acUser.entity';
+import { User } from 'src/model/entity/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Plan, AcUser], constantString.latticeConnection),
+    TypeOrmModule.forFeature([Plan, User], constantString.morningeeConnection),
   ],
   controllers: [PlanController],
   providers: [PlanService],

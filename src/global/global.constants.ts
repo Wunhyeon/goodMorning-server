@@ -1,11 +1,11 @@
 const constantString = {
-  latticeConnection: 'LATTICE_CONNECTION',
+  morningeeConnection: 'MORNINGEE_CONNECTION',
   portfolioRepository: 'PORTFOLIO_REPOSITORY',
   portfolioTableName: 'portfolio',
   acUserTableName: 'ac_user',
   AC_USER_JWT_ACCESS_NAME: 'acUserAccessToken',
   AC_USER_JWT_REFRESH_NAME: 'acUserRefreshToken',
-  AC_USER_JWT_ACCESS_EXPIRATION_TIME: '1h',
+  AC_USER_JWT_ACCESS_EXPIRATION_TIME: 1 * 60 * 60, // 초(second)단위
   AC_USER_JWT_REFRESH_EXPIRATION_TIME: '2h',
   MASTER_USER_JWT_ACCESS_NAME: 'masterUserAccessToken',
   MASTER_USER_JWT_REFRESH_NAME: 'masterUserRefreshToken',

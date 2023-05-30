@@ -9,8 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Accelerator } from './accelerator.entity';
-import { AuthorityPolicy } from './authorityPolicy.entity';
 
 @Entity({
   database: process.env.DB_LATTICE_DATABASE,
@@ -21,12 +19,6 @@ export class MasterUser {
   constructor() {}
   @PrimaryGeneratedColumn('uuid')
   id!: string;
-
-  @ManyToOne(() => Accelerator, (accelerator) => accelerator.masterUser, {
-    nullable: false,
-  })
-  @JoinColumn({ name: 'ac_id' })
-  accelerator: Accelerator;
 
   @Column()
   email!: string;

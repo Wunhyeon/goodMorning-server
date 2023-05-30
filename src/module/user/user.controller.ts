@@ -13,14 +13,14 @@ import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guards';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
-import { AcUserService } from './ac-user.service';
+import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('AC USER')
-@Controller('ac-user')
-export class AcUserController {
+@ApiTags('USER')
+@Controller('user')
+export class UserController {
   constructor(
-    private readonly acUserService: AcUserService,
+    private readonly acUserService: UserService,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
   ) {}
@@ -28,7 +28,7 @@ export class AcUserController {
   // @UseGuards(AuthGuard('local'))
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async acUserLogin(@Request() req, @Res({ passthrough: true }) res: Response) {
+  async userLogin(@Request() req, @Res({ passthrough: true }) res: Response) {
     // return req.user;
     // return this.authService.acUserlogin(req.user);
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
@@ -61,9 +61,9 @@ export class AcUserController {
     return;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('profile')
+  // getProfile(@Request() req) {
+  //   return req.user;
+  // }
 }
