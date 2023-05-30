@@ -1,15 +1,7 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { CustomNamingStrategy } from './src/global/customNamingStrategy';
-import { Portfolio } from './src/model/entity/portfolio.entity';
-import { AuthorityPolicy } from 'src/model/entity/authorityPolicy.entity';
-import { AcUser } from 'src/model/entity/acUser.entity';
-import { MasterUser } from 'src/model/entity/masterUser.entity';
-import { AcStructure } from 'src/model/entity/acStructure.entity';
-import { Accelerator } from 'src/model/entity/accelerator.entity';
-import { AcTech } from 'src/model/entity/acTech.entity';
-import { AcKeyword } from 'src/model/entity/acKeyword.entity';
-import { AcTechKeyword } from 'src/model/entity/acTechKeyword.entity';
+import { User } from 'src/model/entity/user.entity';
 import { entities } from './src/global/global.entitity';
 import { Plan } from 'src/model/entity/plan.entity';
 

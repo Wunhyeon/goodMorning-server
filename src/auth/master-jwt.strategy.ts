@@ -27,8 +27,6 @@ export class MasterJwtStrategy extends PassportStrategy(
     return {
       id: payload.id,
       email: payload.email,
-      accelerator: payload.accelerator,
-      // authorityPolicy: payload.authorityPolicy,
     };
   }
 }

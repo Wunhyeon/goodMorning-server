@@ -1,5 +1,4 @@
-import dataSource from 'lattice.a-type.dataSource';
-import { AcKeyword } from '../entity/acKeyword.entity';
+import dataSource from 'morningee.dataSource';
 import { InsertResult } from 'typeorm';
 import { MasterUser } from '../entity/masterUser.entity';
 

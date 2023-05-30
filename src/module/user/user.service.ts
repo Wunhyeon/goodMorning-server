@@ -7,17 +7,17 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { constantString } from 'src/global/global.constants';
-import { AcUser } from 'src/model/entity/acUser.entity';
+import { User } from 'src/model/entity/user.entity';
 import { MasterUser } from 'src/model/entity/masterUser.entity';
 import { Repository } from 'typeorm';
 import { pbkdf2Sync } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class AcUserService {
+export class UserService {
   constructor(
-    @InjectRepository(AcUser, constantString.latticeConnection)
-    private acUserRepository: Repository<AcUser>,
+    @InjectRepository(User, constantString.morningeeConnection)
+    private acUserRepository: Repository<User>,
 
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
@@ -28,12 +28,11 @@ export class AcUserService {
   async findOneByUserEmail(email: string) {
     return this.acUserRepository.findOne({
       where: { email: email },
-      relations: { authorityPolicy: true },
     });
   }
 
   // refreshToken 갱신
-  async setCurrentRefreshToken(refreshToken: string, acUser: AcUser) {
+  async setCurrentRefreshToken(refreshToken: string, user: User) {
     const currentHashedRefreshTokenBuffer = await pbkdf2Sync(
       refreshToken,
       this.configService.get('CRYPTO_REFRESH_HASH_SALT_KEY'),
@@ -43,7 +42,7 @@ export class AcUserService {
     );
 
     await this.acUserRepository.update(
-      { id: acUser.id },
+      { id: user.id },
       {
         currentHashedRefreshToken:
           currentHashedRefreshTokenBuffer.toString('base64'),
@@ -52,9 +51,9 @@ export class AcUserService {
   }
 
   // user의 refreshToken 비교
-  async getUserIfRefreshTokenMatches(refreshToken: string, acUser: AcUser) {
-    const acUserInfo = await this.acUserRepository.findOne({
-      where: { id: acUser.id },
+  async getUserIfRefreshTokenMatches(refreshToken: string, user: User) {
+    const userInfo = await this.acUserRepository.findOne({
+      where: { id: user.id },
       select: ['id', 'email', 'currentHashedRefreshToken'],
     });
 
@@ -68,10 +67,10 @@ export class AcUserService {
 
     const requestRefreshToken = requestRefreshTokenBuffer.toString('base64');
 
-    if (acUserInfo.currentHashedRefreshToken !== requestRefreshToken) {
+    if (userInfo.currentHashedRefreshToken !== requestRefreshToken) {
       throw new UnauthorizedException();
     }
 
-    return acUserInfo;
+    return userInfo;
   }
 }

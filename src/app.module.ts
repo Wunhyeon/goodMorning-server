@@ -2,18 +2,15 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PortfolioModule } from './module/portfolio/portfolio.module';
 import { GlobalModule } from './global/global.module';
 import { UtilModule } from './util/util.module';
-import { AcceleratorModule } from './module/accelerator/accelerator.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './interceptor/logging.interceptor';
 import { LoggerMiddleware } from 'src/middleware/logger.middleware';
 import { AuthModule } from './auth/auth.module';
-import { AcUserModule } from './module/ac-user/ac-user.module';
+import { UserModule } from './module/user/user.module';
 import { AdminModule } from './module/admin/admin.module';
-import { AcTechModule } from './module/ac-tech/ac-tech.module';
 import { PlanModule } from './module/plan/plan.module';
 
 @Module({
@@ -41,12 +38,8 @@ import { PlanModule } from './module/plan/plan.module';
     }),
     GlobalModule,
     UtilModule,
-    PortfolioModule,
-    AcceleratorModule,
     AuthModule,
-    AcUserModule,
     AdminModule,
-    AcTechModule,
     PlanModule,
   ],
   controllers: [AppController],

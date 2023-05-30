@@ -8,22 +8,21 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AuthorityPolicy } from './authorityPolicy.entity';
-import { IsString, IsUUID } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Plan } from './plan.entity';
 
 @Entity({
   database: process.env.DB_LATTICE_DATABASE,
   schema: process.env.DB_LATTICE_DATABASE,
-  name: 'ac_user',
+  name: 'user',
 })
-export class AcUser {
+export class User {
   constructor() {}
-  @ApiProperty({ example: 'asdfsadf', description: 'uuid로 생성된 id' }) // swagger 예시
-  @IsUUID()
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @ApiProperty({ example: 1, description: 'id' }) // swagger 예시
+  @IsNumber()
+  @PrimaryGeneratedColumn()
+  id!: number;
 
   @ApiProperty({ example: '아론비행선박', description: '포트폴리오 회사 이름' })
   @IsString() // validator
@@ -48,9 +47,6 @@ export class AcUser {
   @DeleteDateColumn()
   deletedAt!: Date;
 
-  @OneToMany(() => AuthorityPolicy, (authorityPolicy) => authorityPolicy.acUser)
-  authorityPolicy?: AuthorityPolicy[];
-
-  @OneToMany(() => Plan, (plan) => plan.acUser)
+  @OneToMany(() => Plan, (plan) => plan.user)
   plan?: Plan[];
 }

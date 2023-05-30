@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -9,7 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AcUser } from './acUser.entity';
+import { User } from './user.entity';
+import { IsDateString } from 'class-validator';
 
 @Entity({
   database: process.env.DB_LATTICE_DATABASE,
@@ -18,19 +18,24 @@ import { AcUser } from './acUser.entity';
 })
 export class Plan {
   constructor() {}
-  @ApiProperty({ example: 'asdfsadf', description: 'uuid로 생성된 id' }) // swagger 예시
-  @IsUUID()
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @ApiProperty({ example: 1, description: 'id' }) // swagger 예시
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  @ManyToOne(() => AcUser, (acUser) => acUser.plan)
-  acUser!: AcUser;
+  @ManyToOne(() => User, (user) => user.plan)
+  user!: User;
 
   // 계획
+  @ApiProperty({
+    example: { contents: 'contents' },
+    description: '계획내용 JSON',
+  })
   @Column('json')
   contents!: JSON;
 
   // 작성시간 (프론트)
+  @ApiProperty({ example: '2023-05-30 04:29' })
+  @IsDateString()
   @Column()
   creationTime!: Date;
 
