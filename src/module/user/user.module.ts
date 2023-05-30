@@ -6,6 +6,7 @@ import { User } from 'src/model/entity/user.entity';
 import { constantString } from 'src/global/global.constants';
 import { AuthModule } from 'src/auth/auth.module';
 import { MasterUser } from 'src/model/entity/masterUser.entity';
+import { UtilModule } from 'src/util/util.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MasterUser } from 'src/model/entity/masterUser.entity';
     ),
     // AuthModule,
     forwardRef(() => AuthModule),
+    UtilModule,
   ],
   controllers: [UserController],
   providers: [UserService],

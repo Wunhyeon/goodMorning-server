@@ -12,21 +12,24 @@ import { MasterUser } from 'src/model/entity/masterUser.entity';
 import { Repository } from 'typeorm';
 import { pbkdf2Sync } from 'crypto';
 import { ConfigService } from '@nestjs/config';
+import { HashUtil } from 'src/util/hash.util';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User, constantString.morningeeConnection)
-    private acUserRepository: Repository<User>,
+    private userRepository: Repository<User>,
 
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
 
     private configService: ConfigService,
+
+    private readonly hashUtil: HashUtil,
   ) {}
 
   async findOneByUserEmail(email: string) {
-    return this.acUserRepository.findOne({
+    return this.userRepository.findOne({
       where: { email: email },
     });
   }
@@ -41,7 +44,7 @@ export class UserService {
       'sha256',
     );
 
-    await this.acUserRepository.update(
+    await this.userRepository.update(
       { id: user.id },
       {
         currentHashedRefreshToken:
@@ -52,7 +55,7 @@ export class UserService {
 
   // user의 refreshToken 비교
   async getUserIfRefreshTokenMatches(refreshToken: string, user: User) {
-    const userInfo = await this.acUserRepository.findOne({
+    const userInfo = await this.userRepository.findOne({
       where: { id: user.id },
       select: ['id', 'email', 'currentHashedRefreshToken'],
     });
@@ -72,5 +75,16 @@ export class UserService {
     }
 
     return userInfo;
+  }
+
+  /**
+   * 비밀번호 해쉬해서 업데이트
+   * @param userId
+   * @param password
+   */
+  async updatePassword(userId: number, password: string) {
+    const hashedPassword = this.hashUtil.makeHash(password);
+
+    await this.userRepository.update(userId, { password: hashedPassword });
   }
 }
