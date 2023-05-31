@@ -46,7 +46,7 @@ export class PlanService {
   // 쿼리를 사용하지 않는 헬퍼유틸들  /////////////////////////////
   /**
    * creationTime과 목표시간을 받아서 성공했는지(1), 반절 성공인지(2), 실패인지(3) 판단.
-   * 현재는 7시~9시 성공, 9시~12시 반절성공, 12시~ 다음날 7시 실패. 이지만, 이걸 앞으로도 어떻게 할지는 회의필요.
+   * 현재는 7시-9시 성공, 9시-2시 반절성공, 12시- 다음날 7시 실패. 이지만, 이걸 앞으로도 어떻게 할지는 회의필요.
    * 일시적인 메서드가 될 수 있을듯
    * @param creationTime
    * @param startTime 시작시간
@@ -59,7 +59,6 @@ export class PlanService {
     endTime: Date,
     halfSuccessTime: Date,
   ) {
-    //
     if (creationTime >= startTime && creationTime < endTime) {
       return 1;
     } else if (creationTime >= endTime && creationTime < halfSuccessTime) {
@@ -95,11 +94,53 @@ export class PlanService {
       throw new ForbiddenException(errorString.DUPLICATE_CREATION_TIME);
     }
 
+    // 성공, 반절성공, 실패 판단
+    const judgeSuccessStartTime = new Date(startTime);
+    judgeSuccessStartTime.setUTCHours(constantString.UTC_PLAN_START_TIME_HOUR);
+    judgeSuccessStartTime.setUTCMinutes(
+      constantString.UTC_PLAN_START_TIME_MINUTE,
+    );
+
+    const judgeSuccessEndTime = new Date(judgeSuccessStartTime);
+    // endTime의 시간이 더 적다는 거는 하루가 지나갔다는 의미이므로 하루를 더해줌.
+    if (
+      constantString.UTC_PLAN_END_TIME_HOUR -
+        judgeSuccessStartTime.getUTCHours() <
+      0
+    ) {
+      judgeSuccessEndTime.setUTCDate(judgeSuccessStartTime.getUTCDate() + 1);
+    }
+    judgeSuccessEndTime.setUTCHours(constantString.UTC_PLAN_END_TIME_HOUR);
+    judgeSuccessEndTime.setUTCMinutes(constantString.UTC_PLAN_END_TIME_HOUR);
+
+    // successEndTime ~ halfSuccesEndTime 안에 들어오면 절반 성공
+    const judgeHalfSuccesEndTime = new Date(judgeSuccessEndTime);
+    if (
+      constantString.UTC_PLAN_HALF_SUCCESS_END_HOUR -
+        judgeSuccessEndTime.getHours() <
+      0
+    ) {
+      judgeHalfSuccesEndTime.setUTCDate(judgeSuccessEndTime.getUTCDate() + 1);
+    }
+    judgeHalfSuccesEndTime.setUTCHours(
+      constantString.UTC_PLAN_HALF_SUCCESS_END_HOUR,
+    );
+    judgeHalfSuccesEndTime.setUTCMinutes(
+      constantString.UTC_PLAN_HALF_SUCCESS_END_MINUTE,
+    );
+
+    const isSuccess = this.judgeSuccess(
+      new Date(),
+      judgeSuccessStartTime,
+      judgeSuccessEndTime,
+      judgeHalfSuccesEndTime,
+    );
+
     return await this.planRepository.insert({
       user: user,
       creationTime: plan.creationTime,
       contents: plan.contents,
-      isSuccess: 1,
+      isSuccess,
     });
   }
 
@@ -155,6 +196,7 @@ export class PlanService {
         'plan.id',
         'plan.contents',
         'plan.creationTime',
+        'plan.isSuccess',
       ])
       .getMany();
   }
@@ -177,7 +219,12 @@ export class PlanService {
     return this.planRepository
       .createQueryBuilder('plan')
       .innerJoin('plan.user', 'user', 'user.id = :userId', { userId })
-      .select(['plan.id', 'plan.contents', 'plan.creationTime'])
+      .select([
+        'plan.id',
+        'plan.contents',
+        'plan.creationTime',
+        'plan.isSuccess',
+      ])
       .where('plan.creationTime >= :startTime', { startTime })
       .andWhere('plan.creationTime < :endTime', { endTime })
       .orderBy('plan.creationTime', 'DESC')

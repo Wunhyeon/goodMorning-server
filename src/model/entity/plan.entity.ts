@@ -40,7 +40,8 @@ export class Plan {
   creationTime!: Date;
 
   // 성공여부
-  @Column('boolean')
+  @ApiProperty({ example: 1, description: '1 : 성공, 2: 반절 성공, 3: 실패' })
+  @Column()
   isSuccess!: 1 | 2 | 3;
 
   @CreateDateColumn()

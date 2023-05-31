@@ -76,19 +76,12 @@ export class Util {
 
     startTime.setUTCHours(startHour, startMinutes, startSeconds);
 
-    const endTime = new Date();
-    endTime.setUTCDate(startTime.getUTCDate() + dayTerm);
+    const endTime = new Date(startTime);
+    endTime.setUTCDate(endTime.getUTCDate() + dayTerm);
     endTime.setUTCHours(startTime.getUTCHours());
     endTime.setUTCMinutes(startTime.getUTCMinutes());
     endTime.setUTCSeconds(startTime.getUTCSeconds());
 
     return { startTime, endTime };
   }
-
-  /**
-   * KTC 2023년 5월 31일 17시 00분을 UTC로 바꾸면 => UTC 2023년 5월 31일 8시. KTC 2023년 5월 31일 07시 00분을 UTC로 바꾸면 => UTC 2023년 5월 30일 22시
-   * @param referenceDate 바꿀 날짜 (KTC)
-   * @param hour 시간 (KTC)
-   */
-  ktcTimeToUtcDate(referenceDate: Date, hour: number) {}
 }
