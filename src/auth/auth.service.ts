@@ -24,7 +24,6 @@ export class AuthService {
     const user = await this.userService.findOneByUserEmail(email);
 
     const hashedPassword = this.hashUtil.makeHash(password);
-    console.log('hashed : ', hashedPassword);
 
     if (user && user.password === hashedPassword) {
       const { password, ...result } = user;

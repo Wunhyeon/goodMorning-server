@@ -5,6 +5,7 @@ import {
   Request,
   Body,
   Get,
+  Patch,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guards';
@@ -68,5 +69,15 @@ export class PlanController {
   @Get('today/mine')
   async getTodayMyPlan(@Request() req) {
     return await this.planService.getTodayMyPlan(req.user.id);
+  }
+
+  // 오늘 쓴 계획 수정하기
+  @UseGuards(JwtAuthGuard)
+  @Patch('today/mine')
+  async updateTodayMyPlan(
+    @Request() req,
+    @Body() createPlanDto: CreatePlanDto,
+  ) {
+    this.planService.updateTodayMyPlan(req.user.id, createPlanDto);
   }
 }
