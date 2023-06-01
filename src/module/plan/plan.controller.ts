@@ -9,11 +9,17 @@ import {
   Delete,
   Param,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guards';
 import { CreatePlanDto } from './dto/create-plan.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('PLAN')
 @Controller('plan')
@@ -21,6 +27,7 @@ export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
   // plan 입력
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   async insertPlan(@Request() req, @Body() createPlanDto: CreatePlanDto) {
@@ -87,6 +94,7 @@ export class PlanController {
       ],
     },
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('today/others')
   async getTodayOthersPlan(@Request() req) {
@@ -112,13 +120,63 @@ export class PlanController {
       },
     },
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('today/mine')
   async getTodayMyPlan(@Request() req) {
     return await this.planService.getTodayMyPlan(req.user.id);
   }
 
+  // 내 계획 히스토리 목록
+  @ApiOperation({
+    summary: '내 계획 히스토리',
+    description:
+      '내 계획 히스토리. ex)2023-05-30T15:00:00.000Z ~ 2023-06-01T15:00:00.000Z  \n 이 시간을 KTC로 바꿔보면 5월31일00시00분 ~ 6월 2일00시00분 사이의 시간 안에 있는 계획을 가져오게 됩니다. (6월 2일은 미포함)',
+  })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: [
+        {
+          id: 9,
+          contents: {
+            plan: '수정수정~~~ 5월 31일 5월 31일 5월 31일 5월 31일 수정수정수정',
+          },
+          creationTime: '2023-05-30T22:00:01.000Z',
+          isSuccess: 1,
+          createdAt: '2023-05-31T15:47:34.734Z',
+        },
+        {
+          id: 12,
+          contents: {
+            plan: '6월 1일 222222',
+          },
+          creationTime: '2023-06-01T01:15:00.000Z',
+          isSuccess: 3,
+          createdAt: '2023-06-01T13:33:07.936Z',
+        },
+      ],
+    },
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('/history/mine')
+  async getMyPlanHistory(
+    @Request() req,
+    @Query('startTime') startTime: string,
+    @Query('endTime') endTime: string,
+  ) {
+    const startTimeDate = new Date(startTime);
+    const endTimeDate = new Date(endTime);
+    return await this.planService.getPlanFromStartTimeToEndTime(
+      startTimeDate,
+      endTimeDate,
+      req.user.id,
+    );
+  }
+
   // 오늘 쓴 계획 수정하기
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch('today/mine')
   async updateTodayMyPlan(
