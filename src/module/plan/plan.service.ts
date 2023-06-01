@@ -67,6 +67,49 @@ export class PlanService {
       .execute();
   }
 
+  // 특정날짜1(startTime) 이후 생성된 가장 오래된 데이터 ~ 특정날짜2(endTime)이전에 생성된 가장 최신의 데이터
+  // 즉, startTime ~ endTime 사이에 생성된 모든 plan
+  async getPlanFromStartTimeToEndTime(
+    startTime: Date,
+    endTime: Date,
+    userId: number,
+  ) {
+    return this.planRepository
+      .createQueryBuilder('p')
+      .select([
+        'p.id',
+        'p.creation_time',
+        'p.contents',
+        'p.isSuccess',
+        'p.creationTime',
+        'p.createdAt',
+      ])
+      .innerJoin('p.user', 'u')
+      .innerJoin(
+        (subQuery) => {
+          return subQuery
+            .select('MIN(creation_time)', 'min_creation_time')
+            .addSelect('MAX(creation_time)', 'max_creation_time')
+            .from(Plan, 'plan')
+            .where('plan.user_id = :userId', { userId })
+            .andWhere(
+              'DATE_FORMAT(creation_time, "%Y-%m-%d %T") > DATE_FORMAT( :startTime, "%Y-%m-%d %T") ',
+              { startTime },
+            )
+            .andWhere(
+              'DATE_FORMAT(creation_time, "%Y-%m-%d %T") < DATE_FORMAT(:endTime, "%Y-%m-%d %T") ',
+              {
+                endTime,
+              },
+            );
+        },
+        'mm',
+        'p.creation_time >= mm.min_creation_time AND p.creation_time <= mm.max_creation_time',
+      )
+      .where('u.id = :userId', { userId })
+      .getMany();
+  }
+
   // 쿼리를 사용하지 않는 헬퍼유틸들  /////////////////////////////
   /**
    * creationTime과 목표시간을 받아서 성공했는지(1), 반절 성공인지(2), 실패인지(3) 판단.
