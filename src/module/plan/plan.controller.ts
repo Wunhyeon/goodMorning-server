@@ -6,6 +6,9 @@ import {
   Body,
   Get,
   Patch,
+  Delete,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guards';
@@ -122,6 +125,21 @@ export class PlanController {
     @Request() req,
     @Body() createPlanDto: CreatePlanDto,
   ) {
-    this.planService.updateTodayMyPlan(req.user.id, createPlanDto);
+    await this.planService.updateTodayMyPlan(req.user.id, createPlanDto);
+  }
+
+  // 내 오늘 계획삭제
+  @ApiOperation({
+    summary: '오늘 내가 쓴 계획 삭제',
+    description:
+      '오늘(목표시간 범위 내. ex.7시~ 다음날 7시 범위 내) 내가 쓴 계획을 삭제합니다.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Delete(':planId')
+  async deleteLoginUserPlan(
+    @Request() req,
+    @Param('planId', ParseIntPipe) planId: number,
+  ) {
+    await this.planService.softDeleteTodayMyPlan(req.user.id, planId);
   }
 }

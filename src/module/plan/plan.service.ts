@@ -43,6 +43,30 @@ export class PlanService {
       .getMany();
   }
 
+  /**
+   * UserId와 planId, creationTime (startTime, endTime)으로 softDelete
+   * @param userId
+   * @param planId
+   * @returns
+   */
+  async softDeleteUsersPlanByCreationRange(
+    userId: number,
+    planId: number,
+    startTime,
+    endTime,
+  ) {
+    return await this.planRepository
+      .createQueryBuilder('plan')
+      .innerJoin('plan.user', 'user')
+      .update(Plan)
+      .set({ deletedAt: new Date() })
+      .where('user.id = :userId', { userId })
+      .andWhere('plan.id = :planId', { planId })
+      .andWhere('creationTime >= :startTime', { startTime })
+      .andWhere('creationTime < :endTime', { endTime })
+      .execute();
+  }
+
   // 쿼리를 사용하지 않는 헬퍼유틸들  /////////////////////////////
   /**
    * creationTime과 목표시간을 받아서 성공했는지(1), 반절 성공인지(2), 실패인지(3) 판단.
@@ -321,5 +345,26 @@ export class PlanService {
       .andWhere('creationTime > :startTime', { startTime })
       .andWhere('creationTime < :endTime', { endTime })
       .execute();
+  }
+
+  // 내가 오늘 쓴 계획 삭제하기
+  async softDeleteTodayMyPlan(userId: number, planId: number) {
+    const now = new Date();
+    // 시작시간, 끝시간 받아오기 (오늘기준)
+    const { startTime, endTime } =
+      this.util.utcGetStartTimeAndEndTimeRangeDayTerm(
+        1,
+        now,
+        constantString.UTC_PLAN_START_TIME_HOUR,
+        constantString.UTC_PLAN_START_TIME_MINUTE,
+        0,
+      );
+
+    await this.softDeleteUsersPlanByCreationRange(
+      userId,
+      planId,
+      startTime,
+      endTime,
+    );
   }
 }
