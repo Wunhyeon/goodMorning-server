@@ -58,6 +58,38 @@ export class PlanController {
     return await this.planService.getAllUserThisTimePlan2();
   }
 
+  @ApiOperation({
+    summary: '오늘 다른사람들 계획 조회 (내 계획 빼고)',
+    description: '오늘 다른사람들 계획 조회 (내 계획 빼고)',
+  })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: [
+        {
+          id: 2,
+          email: 'others@gmail.com',
+          name: '다른사람',
+          plan: [
+            {
+              id: 2,
+              contents: {
+                JSON: 'JSON',
+              },
+              creationTime: '2023-05-30T16:15:00.000Z',
+              isSuccess: 3,
+            },
+          ],
+        },
+      ],
+    },
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('today/others')
+  async getTodayOthersPlan(@Request() req) {
+    return await this.planService.getTodayOthersPlan(req.user.id);
+  }
+
   // 오늘 내가 쓴 계획 조회
   @ApiOperation({
     summary: '내가 오늘 쓴 계획 조회',

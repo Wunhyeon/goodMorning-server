@@ -204,6 +204,44 @@ export class PlanService {
         'plan.creationTime',
         'plan.isSuccess',
       ])
+      .orderBy('plan.isSuccess IS NULL', 'ASC')
+      .addOrderBy('plan.isSuccess', 'ASC')
+      .getMany();
+  }
+
+  getTodayOthersPlan(userId: number) {
+    // 시작시간, 끝시간 받아오기 (오늘기준)
+    const { startTime, endTime } =
+      this.util.utcGetStartTimeAndEndTimeRangeDayTerm(
+        1,
+        new Date(),
+        constantString.UTC_PLAN_START_TIME_HOUR,
+        constantString.UTC_PLAN_START_TIME_MINUTE,
+        0,
+      );
+
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin(
+        'user.plan',
+        'plan',
+        `plan.id = (SELECT plan.id 
+                FROM plan 
+                WHERE  user_id = user.id AND (creation_time >= :startTime AND creation_time < :endTime) AND user_id != :userId ORDER BY plan.created_at DESC LIMIT 1)`,
+        { startTime, endTime, userId },
+      )
+      .select([
+        'user.id',
+        'user.email',
+        'user.name',
+        'plan.id',
+        'plan.contents',
+        'plan.creationTime',
+        'plan.isSuccess',
+      ])
+      .where('user.id != :userId', { userId })
+      .orderBy('plan.isSuccess IS NULL', 'ASC')
+      .addOrderBy('plan.isSuccess', 'ASC')
       .getMany();
   }
 
