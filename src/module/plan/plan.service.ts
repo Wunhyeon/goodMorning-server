@@ -70,6 +70,12 @@ export class PlanService {
 
   // 여러 쿼리 조합. 트랜잭션 필요 등.  ///////////////////////////////
 
+  /**
+   * (오늘)계획 적기.
+   * @param user
+   * @param plan
+   * @returns
+   */
   async insertPlan(user: User, plan: CreatePlanDto) {
     // 오늘 쓴 글(목표시간~다음목표시간)이 있는지
     const now = new Date();
