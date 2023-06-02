@@ -18,6 +18,7 @@ import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { UserService } from './user.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @ApiTags('USER')
 @Controller('user')
@@ -31,7 +32,11 @@ export class UserController {
   // @UseGuards(AuthGuard('local'))
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async userLogin(@Request() req, @Res({ passthrough: true }) res: Response) {
+  async userLogin(
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+    @Body() loginUserDto: LoginUserDto,
+  ) {
     // return req.user;
     // return this.authService.acUserlogin(req.user);
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(

@@ -192,6 +192,7 @@ export class PlanController {
     description:
       '오늘(목표시간 범위 내. ex.7시~ 다음날 7시 범위 내) 내가 쓴 계획을 삭제합니다.',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':planId')
   async deleteLoginUserPlan(

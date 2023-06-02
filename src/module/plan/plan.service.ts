@@ -273,6 +273,7 @@ export class PlanService {
       ])
       .orderBy('plan.isSuccess IS NULL', 'ASC')
       .addOrderBy('plan.isSuccess', 'ASC')
+      .addOrderBy('plan.createdAt', 'ASC')
       .getMany();
   }
 
@@ -309,6 +310,7 @@ export class PlanService {
       .where('user.id != :userId', { userId })
       .orderBy('plan.isSuccess IS NULL', 'ASC')
       .addOrderBy('plan.isSuccess', 'ASC')
+      .addOrderBy('plan.createdAt', 'ASC')
       .getMany();
   }
 
