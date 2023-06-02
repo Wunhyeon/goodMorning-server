@@ -30,6 +30,7 @@ async function bootstrap() {
     .setTitle('Lattice 2.0')
     .setDescription('Lattice 2.0 API 입니다.')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
