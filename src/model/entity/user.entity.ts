@@ -18,7 +18,11 @@ import { Plan } from './plan.entity';
   name: 'user',
 })
 export class User {
-  constructor() {}
+  constructor(id?: number) {
+    if (id) {
+      this.id = id;
+    }
+  }
   @ApiProperty({ example: 1, description: 'id' }) // swagger 예시
   @IsNumber()
   @PrimaryGeneratedColumn()
