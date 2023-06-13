@@ -100,7 +100,11 @@ export class AuthService {
     });
 
     //
-    const cookie = `${constantString.AC_USER_JWT_REFRESH_NAME}=${token}; HttpOnly; Path=/; Max-Age=${constantString.AC_USER_JWT_REFRESH_EXPIRATION_TIME}`;
+    let cookie = `${constantString.AC_USER_JWT_REFRESH_NAME}=${token}; HttpOnly; SameSite=None; Secure; Domain=.${process.env.DOMAIN};  Path=/; Max-Age=${constantString.AC_USER_JWT_REFRESH_EXPIRATION_TIME}`;
+
+    if (process.env.NODE_ENV === 'dev') {
+      cookie = `${constantString.AC_USER_JWT_REFRESH_NAME}=${token}; HttpOnly; Path=/; Max-Age=${constantString.AC_USER_JWT_REFRESH_EXPIRATION_TIME}`;
+    }
     return {
       token,
       cookie,

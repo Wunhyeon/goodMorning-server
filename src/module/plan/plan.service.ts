@@ -107,6 +107,7 @@ export class PlanService {
         'p.creation_time >= mm.min_creation_time AND p.creation_time <= mm.max_creation_time',
       )
       .where('u.id = :userId', { userId })
+      .orderBy('p.createdAt', 'DESC')
       .getMany();
   }
 
