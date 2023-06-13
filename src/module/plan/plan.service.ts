@@ -278,7 +278,13 @@ export class PlanService {
       .getMany();
   }
 
-  getTodayOthersPlan(userId: number) {
+  /**
+   * 해당유저 말고, 다른 유저들 계획 받아오기
+   * @param userId  필수. 이 유저를 제외한 다른 유저들의 계획 가져옴.
+   * @param jobId option. 있으면 해당 job에 속하는 유저들의 계획만 가져옴
+   * @returns
+   */
+  getTodayOthersPlan(userId: number, jobId?: number) {
     // 시작시간, 끝시간 받아오기 (오늘기준)
     const { startTime, endTime } =
       this.util.utcGetStartTimeAndEndTimeRangeDayTerm(
