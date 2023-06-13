@@ -4,6 +4,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,14 +13,15 @@ import {
 import { IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Plan } from './plan.entity';
-import { UserJob } from './userJob.entity';
+import { User } from './user.entity';
+import { Job } from './job.entity';
 
 @Entity({
   database: process.env.DB_LATTICE_DATABASE,
   schema: process.env.DB_LATTICE_DATABASE,
-  name: 'user',
+  name: 'user_job',
 })
-export class User {
+export class UserJob {
   constructor(id?: number) {
     if (id) {
       this.id = id;
@@ -29,21 +32,13 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ApiProperty({ example: '아론비행선박', description: '포트폴리오 회사 이름' })
-  @IsString() // validator
-  @Column()
-  email!: string;
+  @ManyToOne(() => User, (user) => user.id, { nullable: false })
+  @JoinColumn({ foreignKeyConstraintName: 'fk_user' })
+  user!: User;
 
-  @ApiProperty({ example: 'asdnkvl', description: '유저 비밀번호' })
-  @IsString()
-  @Column()
-  password!: string;
-
-  @Column()
-  name!: string;
-
-  @Column({ nullable: true })
-  currentHashedRefreshToken?: string;
+  @ManyToOne(() => Job, (job) => job.id, { nullable: false })
+  @JoinColumn({ foreignKeyConstraintName: 'fk_job' })
+  job!: Job;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -53,10 +48,4 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt!: Date;
-
-  @OneToMany(() => Plan, (plan) => plan.user)
-  plan?: Plan[];
-
-  @OneToMany(() => UserJob, (userJob) => userJob.user)
-  userJob?: UserJob[];
 }
