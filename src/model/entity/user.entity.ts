@@ -6,6 +6,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { IsNumber, IsString } from 'class-validator';
@@ -29,8 +30,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ApiProperty({ example: '아론비행선박', description: '포트폴리오 회사 이름' })
+  @ApiProperty({ example: 'email', description: 'xhwogusxh@gmail.com' })
   @IsString() // validator
+  @Unique('uq_email', ['email'])
   @Column()
   email!: string;
 
@@ -41,6 +43,17 @@ export class User {
 
   @Column()
   name!: string;
+
+  @Column()
+  nickName!: string;
+
+  // 생년월일
+  @Column({ nullable: true })
+  birthday?: Date;
+
+  // 결심
+  @Column({ nullable: true })
+  decision?: string;
 
   @Column({ nullable: true })
   currentHashedRefreshToken?: string;

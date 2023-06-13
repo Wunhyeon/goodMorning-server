@@ -37,6 +37,18 @@ export class creatJobTable1686556761348 implements MigrationInterface {
         );
       `,
     );
+
+    await queryRunner.query(`
+      ALTER TABLE user
+      ADD CONSTRAINT uq_email UNIQUE (email);
+      `);
+
+    await queryRunner.query(`
+      ALTER TABLE user
+      ADD COLUMN nick_name VARCHAR(255) NOT NULL AFTER name,
+      ADD COLUMN birthday DATE NULL AFTER nick_name,
+      ADD COLUMN decision VARCHAR(255) NULL AFTER birthday
+      `);
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {}
