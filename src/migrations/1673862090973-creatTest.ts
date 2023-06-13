@@ -21,6 +21,12 @@ export class creatTest1673862090973 implements MigrationInterface {
         );
       `,
     );
+
+    await queryRunner.query(
+      `
+      DROP TABLE test;
+      `,
+    );
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {}
