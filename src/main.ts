@@ -16,7 +16,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['localhost:3000', 'https://morningee.xyz'],
+    origin: ['http://localhost:3000', 'https://morningee.xyz'],
     credentials: true,
   });
 
@@ -27,8 +27,8 @@ async function bootstrap() {
 
   // swagger
   const config = new DocumentBuilder()
-    .setTitle('Lattice 2.0')
-    .setDescription('Lattice 2.0 API 입니다.')
+    .setTitle('Morningee😎')
+    .setDescription('Morningee 1.0 API 입니다.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

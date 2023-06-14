@@ -19,6 +19,7 @@ import { UserService } from './user.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { JwtRefreshAuthGuard } from 'src/auth/jwt-refresh-auth.guards';
 
 @ApiTags('USER')
 @Controller('user')
@@ -56,11 +57,12 @@ export class UserController {
     console.log('req.user : ', req.user);
 
     // return req.user;
-    return { user: { name: req.user.name } };
+    return { user: { name: req.user.name, nickName: req.user.nickName } };
   }
 
   // refresh Token으로 accessToken 재발행
-  @UseGuards(AuthGuard('jwt-refresh-token'))
+  // @UseGuards(AuthGuard('jwt-refresh-token'))
+  @UseGuards(JwtRefreshAuthGuard)
   @Get('refresh')
   refreshToken(@Request() req, @Res({ passthrough: true }) res: Response) {
     const accessToken = this.authService.getCookieWithJwtAccessToken(req.user);
