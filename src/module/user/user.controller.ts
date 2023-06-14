@@ -16,7 +16,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guards';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { UserService } from './user.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtRefreshAuthGuard } from 'src/auth/jwt-refresh-auth.guards';
@@ -30,6 +30,11 @@ export class UserController {
     private authService: AuthService,
   ) {}
 
+  @ApiOperation({
+    summary: '로그인',
+    description:
+      'email, password 필수. autoLogin은 옵션. autoLogin true일 경우, 리프레시 토큰 줌.',
+  })
   // @UseGuards(AuthGuard('local'))
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -43,16 +48,21 @@ export class UserController {
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
       req.user,
     );
-    const refreshTokenInfo = this.authService.getCookieWithJwtRefreshToken(
-      req.user,
-    );
 
-    const refreshTokenCookie = refreshTokenInfo.cookie;
-    const refreshToken = refreshTokenInfo.token;
+    res.setHeader('Set-Cookie', [accessTokenCookie]);
 
-    this.userService.setCurrentRefreshToken(refreshToken, req.user);
+    if (loginUserDto.autoLogin) {
+      const refreshTokenInfo = this.authService.getCookieWithJwtRefreshToken(
+        req.user,
+      );
 
-    res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+      const refreshTokenCookie = refreshTokenInfo.cookie;
+      const refreshToken = refreshTokenInfo.token;
+
+      this.userService.setCurrentRefreshToken(refreshToken, req.user);
+
+      res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    }
 
     console.log('req.user : ', req.user);
 
@@ -61,6 +71,20 @@ export class UserController {
   }
 
   // refresh Token으로 accessToken 재발행
+  @ApiOperation({
+    summary: 'refresh Token으로 accessToken 재발행',
+    description: 'refresh Token으로 accessToken 재발행',
+  })
+  @ApiResponse({
+    status: 401,
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'REFRESH_TOKEN_ERROR',
+        error: 'Unauthorized',
+      },
+    },
+  })
   // @UseGuards(AuthGuard('jwt-refresh-token'))
   @UseGuards(JwtRefreshAuthGuard)
   @Get('refresh')
