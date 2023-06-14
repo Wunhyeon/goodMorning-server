@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
-import { constantString } from 'src/global/global.constants';
+import { constantString, errorString } from 'src/global/global.constants';
 import { User } from 'src/model/entity/user.entity';
 import { MasterUser } from 'src/model/entity/masterUser.entity';
 import { Repository } from 'typeorm';
@@ -71,7 +71,7 @@ export class UserService {
     const requestRefreshToken = requestRefreshTokenBuffer.toString('base64');
 
     if (userInfo.currentHashedRefreshToken !== requestRefreshToken) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(errorString.REFRESH_TOKEN_ERROR);
     }
 
     return userInfo;

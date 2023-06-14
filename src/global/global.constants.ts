@@ -28,6 +28,8 @@ const constantString = {
 const errorString = {
   NOT_EDITABLE_TIME: 'NOT_EDITABLE_TIME',
   DUPLICATE_CREATION_TIME: 'DUPLICATE_CREATION_TIME',
+  REFRESH_TOKEN_ERROR: 'REFRESH_TOKEN_ERROR',
+  ACCESS_TOKEN_ERROR: 'ACCESS_TOKEN_ERROR',
 };
 
 export { constantString, errorString };
