@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './module/user/user.module';
 import { AdminModule } from './module/admin/admin.module';
 import { PlanModule } from './module/plan/plan.module';
+import { CommonModule } from './module/common/common.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { PlanModule } from './module/plan/plan.module';
     AuthModule,
     AdminModule,
     PlanModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [

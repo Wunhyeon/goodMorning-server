@@ -10,6 +10,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guards';
@@ -37,9 +38,10 @@ export class PlanController {
   // plan 조회. (그날 다른사람들꺼. 다음 plan올리는 시간 전까지.)
   // @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '오늘 다른사람들 꺼 조회',
-    description:
-      '오늘 다른사람들 꺼 조회. isSuccess 1 : 성공, isSuccess 2 : 반절 성공, isSuccess 3 : 실패',
+    summary: '오늘 모든사람들 꺼 조회 (내꺼 포함)',
+    description: `오늘 모든사람들 꺼 조회. isSuccess 1 : 성공, isSuccess 2 : 반절 성공, isSuccess 3 : 실패 
+
+    jobId는 필수 아님. optional. numberArr. jobId가 있을 경우, job으로 필터링`,
   })
   @Get('today/allUser')
   @ApiResponse({
@@ -50,6 +52,15 @@ export class PlanController {
           id: 1,
           email: 'xhwogusxh@gmail.com',
           name: '임재현',
+          userJob: [
+            {
+              id: 3,
+              job: {
+                id: 7,
+                name: 'CEO',
+              },
+            },
+          ],
           plan: [
             {
               id: 2,
@@ -64,13 +75,20 @@ export class PlanController {
       ],
     },
   })
-  async getThisTimePlan() {
-    return await this.planService.getAllUserThisTimePlan2();
+  async getThisTimePlan(
+    @Query(
+      'jobId',
+      new ParseArrayPipe({ optional: true, items: Number, separator: ',' }),
+    )
+    jobId?: number[],
+  ) {
+    return await this.planService.getAllUserThisTimePlan2(jobId);
   }
 
   @ApiOperation({
     summary: '오늘 다른사람들 계획 조회 (내 계획 빼고)',
-    description: '오늘 다른사람들 계획 조회 (내 계획 빼고)',
+    description:
+      '오늘 다른사람들 계획 조회 (내 계획 빼고) <br> `jobId는 필수 아님. optional. numberArr. jobId가 있을 경우, job으로 필터링`',
   })
   @ApiResponse({
     status: 200,
@@ -90,6 +108,15 @@ export class PlanController {
               isSuccess: 3,
             },
           ],
+          userJob: [
+            {
+              id: 3,
+              job: {
+                id: 5,
+                name: '자영업자',
+              },
+            },
+          ],
         },
       ],
     },
@@ -97,8 +124,15 @@ export class PlanController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('today/others')
-  async getTodayOthersPlan(@Request() req) {
-    return await this.planService.getTodayOthersPlan(req.user.id);
+  async getTodayOthersPlan(
+    @Request() req,
+    @Query(
+      'jobId',
+      new ParseArrayPipe({ optional: true, items: Number, separator: ',' }),
+    )
+    jobId?: number[],
+  ) {
+    return await this.planService.getTodayOthersPlan(req.user.id, jobId);
   }
 
   // 오늘 내가 쓴 계획 조회

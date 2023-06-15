@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CustomNode } from 'src/global/global.interface';
 
 @Injectable()
 export class Util {
@@ -83,5 +84,44 @@ export class Util {
     endTime.setUTCSeconds(startTime.getUTCSeconds());
 
     return { startTime, endTime };
+  }
+
+  buildHierarchy(
+    data: { id: number; name: string; parentId: number }[],
+    parentId: number | null,
+  ): CustomNode[] {
+    const nodes: { [key: number]: CustomNode } = {};
+
+    // Step 1: Create all nodes and index them by id
+    for (const item of data) {
+      const { id, name, parentId } = item;
+      const node: CustomNode = { id, name };
+
+      if (!nodes[id]) {
+        nodes[id] = node;
+      }
+
+      if (parentId === null) {
+        continue; // Skip root nodes
+      }
+
+      const parentNode = nodes[parentId];
+      if (!parentNode.child) {
+        parentNode.child = [];
+      }
+
+      parentNode.child.push(node);
+    }
+
+    // Step 2: Find root nodes  : 이걸 추가안해주면, 자식노드들이 가장 바깥으로 다 들어가게 됨.
+    const roots: CustomNode[] = [];
+    for (const item of data) {
+      const { id, parentId } = item;
+      if (parentId === null) {
+        roots.push(nodes[id]);
+      }
+    }
+
+    return roots;
   }
 }
