@@ -218,7 +218,7 @@ export class PlanService {
     });
   }
 
-  getAllUserThisTimePlan2() {
+  getAllUserThisTimePlan2(jobId?: number[]) {
     const now = new Date();
 
     // 시작시간, 끝시간 받아오기 (오늘기준)
@@ -253,7 +253,7 @@ export class PlanService {
 
     */
 
-    return this.userRepository
+    const query = this.userRepository
       .createQueryBuilder('user')
       .leftJoin(
         'user.plan',
@@ -263,11 +263,24 @@ export class PlanService {
                 WHERE  user_id = user.id AND (creation_time >= :startTime AND creation_time < :endTime) ORDER BY plan.created_at DESC LIMIT 1)`,
         { startTime, endTime },
       )
+      .leftJoin('user.userJob', 'userJobForShow')
+      .leftJoin('userJobForShow.job', 'jobForShow');
+
+    if (jobId && jobId.length > 0) {
+      query.innerJoin('user.userJob', 'userJob', 'userJob.job_id IN (:jobId)', {
+        jobId,
+      });
+    }
+
+    query
       .select([
         'user.id',
         'user.email',
         'user.name',
         'user.nickName',
+        'userJobForShow.id',
+        'jobForShow.id',
+        'jobForShow.name',
         'plan.id',
         'plan.contents',
         'plan.creationTime',
@@ -275,8 +288,9 @@ export class PlanService {
       ])
       .orderBy('plan.isSuccess IS NULL', 'ASC')
       .addOrderBy('plan.isSuccess', 'ASC')
-      .addOrderBy('plan.createdAt', 'ASC')
-      .getMany();
+      .addOrderBy('plan.createdAt', 'ASC');
+
+    return query.getMany();
   }
 
   /**
@@ -285,7 +299,7 @@ export class PlanService {
    * @param jobId option. 있으면 해당 job에 속하는 유저들의 계획만 가져옴
    * @returns
    */
-  getTodayOthersPlan(userId: number, jobId?: number) {
+  getTodayOthersPlan(userId: number, jobId?: number[]) {
     // 시작시간, 끝시간 받아오기 (오늘기준)
     const { startTime, endTime } =
       this.util.utcGetStartTimeAndEndTimeRangeDayTerm(
@@ -296,7 +310,7 @@ export class PlanService {
         0,
       );
 
-    return this.userRepository
+    const query = this.userRepository
       .createQueryBuilder('user')
       .leftJoin(
         'user.plan',
@@ -306,11 +320,24 @@ export class PlanService {
                 WHERE  user_id = user.id AND (creation_time >= :startTime AND creation_time < :endTime) AND user_id != :userId ORDER BY plan.created_at DESC LIMIT 1)`,
         { startTime, endTime, userId },
       )
+      .leftJoin('user.userJob', 'userJobForShow')
+      .leftJoin('userJobForShow.job', 'jobForShow');
+
+    if (jobId && jobId.length > 0) {
+      query.innerJoin('user.userJob', 'userJob', 'userJob.job_id IN (:jobId)', {
+        jobId,
+      });
+    }
+
+    query
       .select([
         'user.id',
         'user.email',
         'user.name',
         'user.nickName',
+        'userJobForShow.id',
+        'jobForShow.id',
+        'jobForShow.name',
         'plan.id',
         'plan.contents',
         'plan.creationTime',
@@ -319,8 +346,9 @@ export class PlanService {
       .where('user.id != :userId', { userId })
       .orderBy('plan.isSuccess IS NULL', 'ASC')
       .addOrderBy('plan.isSuccess', 'ASC')
-      .addOrderBy('plan.createdAt', 'ASC')
-      .getMany();
+      .addOrderBy('plan.createdAt', 'ASC');
+
+    return query.getMany();
   }
 
   /**
