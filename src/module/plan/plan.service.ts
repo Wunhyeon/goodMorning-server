@@ -312,7 +312,7 @@ export class PlanService {
 
     const query = this.userRepository
       .createQueryBuilder('user')
-      .leftJoin(
+      .innerJoin(
         'user.plan',
         'plan',
         `plan.id = (SELECT plan.id 
